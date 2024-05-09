@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\PremiumPurchaseRequest;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -10,7 +11,7 @@ class UserController extends Controller
     {
         $user = auth('sanctum')->user();
 
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'success' => false,
                 'data' => [
@@ -25,5 +26,11 @@ class UserController extends Controller
                 'user' => $user,
             ],
         ]);
+    }
+
+    public function premiumPurchase(PremiumPurchaseRequest $request) {
+        $request->validated();
+        
+        // TODO: PAYMENT PROCCESS
     }
 }

@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Gpt\BiologyController;
+use App\Http\Controllers\Gpt\GeographyController;
+use App\Http\Controllers\Gpt\HistoryController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,6 +24,19 @@ Route::prefix('/auth')->name('auth.')->group(function () {
     Route::delete('/logout', [LoginController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
 });
 
-Route::prefix('/user')->name('user.')->group(function () {
+Route::prefix('/user')->controller(UserController::class)->middleware('auth:sanctum')->name('user.')->group(function () {
     Route::get('/', [UserController::class, 'getUserByToken'])->name('getByToken');
+    Route::post('/premium-purchase', 'premiumPurchase')->name('premiumPurchase');
+});
+
+Route::prefix('/biology')->controller(BiologyController::class)->middleware('auth:sanctum')->name('biology')->group(function () {
+    Route::post('/topic-paraphrase/chat', 'topicParaphrase')->name('paraphrase');
+});
+
+Route::prefix('/geography')->controller(GeographyController::class)->middleware('auth:sanctum')->name('geography')->group(function () {
+    Route::post('/topic-paraphrase/chat', 'topicParaphrase')->name('paraphrase');
+});
+
+Route::prefix('/history')->controller(HistoryController::class)->middleware('auth:sanctum')->name('history')->group(function () {
+    Route::post('/topic-paraphrase/chat', 'topicParaphrase')->name('paraphrase');
 });
