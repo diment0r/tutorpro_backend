@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Gpt\BiologyController;
 use App\Http\Controllers\Gpt\GeographyController;
 use App\Http\Controllers\Gpt\HistoryController;
+use App\Http\Controllers\Gpt\ParaphraseController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -29,14 +30,7 @@ Route::prefix('/user')->controller(UserController::class)->middleware('auth:sanc
     Route::post('/premium-purchase', 'premiumPurchase')->name('premiumPurchase');
 });
 
-Route::prefix('/biology')->controller(BiologyController::class)->middleware('auth:sanctum')->name('biology')->group(function () {
-    Route::post('/topic-paraphrase/chat', 'topicParaphrase')->name('paraphrase');
-});
-
-Route::prefix('/geography')->controller(GeographyController::class)->middleware('auth:sanctum')->name('geography')->group(function () {
-    Route::post('/topic-paraphrase/chat', 'topicParaphrase')->name('paraphrase');
-});
-
-Route::prefix('/history')->controller(HistoryController::class)->middleware('auth:sanctum')->name('history')->group(function () {
-    Route::post('/topic-paraphrase/chat', 'topicParaphrase')->name('paraphrase');
+Route::prefix('/topic-paraphrase')->controller(ParaphraseController::class)->middleware('auth:sanctum')->name('paraphrase.')->group(function () {
+    Route::post('/chat', 'defaultTopicParaphrase')->name('chat');
+    Route::post('/test/{paraphraseId}', 'paraphraseTest')->middleware('checkPremium')->name('test');
 });

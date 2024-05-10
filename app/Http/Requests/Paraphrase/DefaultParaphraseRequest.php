@@ -4,7 +4,7 @@ namespace App\Http\Requests\Paraphrase;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GeographyParaphraseRequest extends FormRequest
+class DefaultParaphraseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,7 @@ class GeographyParaphraseRequest extends FormRequest
     {
         return [
             'topic' => ['required', 'min:3', 'max:255'],
-
+            'subject' => ['required', 'string'],
         ];
     }
 }
