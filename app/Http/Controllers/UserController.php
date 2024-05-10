@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\User\PremiumPurchaseRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -10,7 +11,6 @@ class UserController extends Controller
     public function getUserByToken()
     {
         $user = auth('sanctum')->user();
-
         if (!$user) {
             return response()->json([
                 'success' => false,
@@ -19,7 +19,6 @@ class UserController extends Controller
                 ],
             ]);
         }
-
         return response()->json([
             'success' => true,
             'data' => [
@@ -28,9 +27,29 @@ class UserController extends Controller
         ]);
     }
 
-    public function premiumPurchase(PremiumPurchaseRequest $request) {
+    public function premiumPurchase(PremiumPurchaseRequest $request)
+    {
         $request->validated();
-        
-        // TODO: PAYMENT PROCCESS
+        $userId = auth('sanctum')->user()->id;
+        $user = User::where('id', $userId)->first();
+
+        if ($user->premium) {
+            return response()->json([
+                'success' => false,
+                'data' => [
+                    'error' => 'This user already has premium account',
+                ],
+            ]);
+        }
+
+        $user->premium = true;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $user,
+            ],
+        ]);
     }
 }
