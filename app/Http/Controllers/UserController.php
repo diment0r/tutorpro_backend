@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\User\PremiumPurchaseRequest;
+use App\Models\Paraphrase;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,26 @@ class UserController extends Controller
             'success' => true,
             'data' => [
                 'user' => $user,
+            ],
+        ]);
+    }
+
+    public function getUserHistoryParaphraseById($paraphraseId)
+    {
+        $paraphrase = Paraphrase::where('id', $paraphraseId)->with('user', 'questions.options')->first();
+        if (!$paraphrase) {
+            return response()->json([
+                'success' => false,
+                'data' => [
+                    'error' => 'No paraphrase with id ' . $paraphraseId,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'paraphrase' => $paraphrase,
             ],
         ]);
     }

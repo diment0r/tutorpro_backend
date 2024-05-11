@@ -2,9 +2,6 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Gpt\BiologyController;
-use App\Http\Controllers\Gpt\GeographyController;
-use App\Http\Controllers\Gpt\HistoryController;
 use App\Http\Controllers\Gpt\ParaphraseController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
@@ -26,7 +23,8 @@ Route::prefix('/auth')->name('auth.')->group(function () {
 });
 
 Route::prefix('/user')->controller(UserController::class)->middleware('auth:sanctum')->name('user.')->group(function () {
-    Route::get('/', [UserController::class, 'getUserByToken'])->name('getByToken');
+    Route::get('/', 'getUserByToken')->name('getByToken');
+    Route::get('/history-paraphrase/{paraphraseId}', 'getUserHistoryParaphraseById')->name('history');
     Route::post('/premium-purchase', 'premiumPurchase')->name('premiumPurchase');
 });
 
