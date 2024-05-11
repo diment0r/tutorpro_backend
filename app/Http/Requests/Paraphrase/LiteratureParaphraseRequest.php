@@ -22,7 +22,8 @@ class LiteratureParaphraseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // TODO: VALIDATION RULES
+            'topic' => ['required', 'min:3', 'max:255'],
+            'size' => ['required'],
         ];
     }
 }

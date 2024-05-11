@@ -17,7 +17,7 @@ class QuestionSeeder extends Seeder
         $paraphrases = Paraphrase::inRandomOrder()->get();
 
         foreach ($paraphrases as $paraphrase) {
-            $questionCount = 3;
+            $questionCount = 5;
 
             Question::factory()->count($questionCount)->create([
                 'paraphrase_id' => $paraphrase->id,

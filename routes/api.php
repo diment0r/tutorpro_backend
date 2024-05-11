@@ -32,5 +32,6 @@ Route::prefix('/user')->controller(UserController::class)->middleware('auth:sanc
 
 Route::prefix('/topic-paraphrase')->controller(ParaphraseController::class)->middleware('auth:sanctum')->name('paraphrase.')->group(function () {
     Route::post('/chat', 'defaultTopicParaphrase')->name('chat');
+    Route::post('/literature/chat', 'literatureTopicParaphrase')->name('literature.chat');
     Route::post('/test/{paraphraseId}', 'paraphraseTest')->middleware('checkPremium')->name('test');
 });

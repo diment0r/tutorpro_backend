@@ -17,7 +17,7 @@ class OptionSeeder extends Seeder
         $questions = Question::inRandomOrder()->get();
 
         foreach ($questions as $question) {
-            $optionsCount = 3;
+            $optionsCount = 4;
 
             for ($i = 0; $i < $optionsCount; $i++) {
                 Option::factory()->create([

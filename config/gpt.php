@@ -18,5 +18,9 @@ return [
         'geography' => env('GEOGRAPHY_SUBJECT_NAME'),
         'history' => env('HISTORY_SUBJECT_NAME'),
         'literature' => env('LITERATURE_SUBJECT_NAME'),
+    ],
+    'paraphrase_size' => [
+        'short' => env('LITERATURE_PRAPHRASE_SHORT_SIZE_PROMPT'),
+        'long' => env('LITERATURE_PRAPHRASE_LONG_SIZE_PROMPT'),
     ]
 ];

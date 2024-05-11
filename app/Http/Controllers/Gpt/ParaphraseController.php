@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Gpt;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Paraphrase\DefaultParaphraseRequest;
+use App\Http\Requests\Paraphrase\LiteratureParaphraseRequest;
 use App\Models\Option;
 use App\Models\Paraphrase;
 use App\Models\Question;
@@ -79,6 +80,74 @@ class ParaphraseController extends Controller
         ]);
     }
 
+    public function literatureTopicParaphrase(LiteratureParaphraseRequest $request)
+    {
+        $request->validated();
+
+        if (!(strtolower($request->size) == 'short' || strtolower($request->size) == 'long')) {
+            return response()->json([
+                'success' => false,
+                'data' => [
+                    'error' => 'Size is invalid. Must be one of this [short, long]',
+                ],
+            ]);
+        }
+
+        $paraphrase = Paraphrase::with('user')->where('topic', $request->topic . ' [' . $request->size . ']')->first();
+
+        if ($paraphrase) {
+            return response()->json([
+                'success' => true,
+                'data' => $paraphrase,
+            ]);
+        }
+
+        $paraphraseSizePrompt = strtolower($request->size) == 'short' ? config('gpt.paraphrase_size.short') : config('gpt.paraphrase_size.long');
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('gpt.openai.api_key'),
+            'Content-Type' => 'application/json',
+        ])->post(config('gpt.openai.api_url'), [
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => 'Розкажи послідовно основні події літературного твору "' . $request->topic . '", дійові особи, тема, думка твору. ' . $paraphraseSizePrompt,
+                ]
+            ],
+
+            'model' => config('gpt.openai.model'),
+            'temperature' => (float)config('gpt.openai.temperature'),
+            'max_tokens' => config('gpt.openai.max_tokens'),
+            'top_p' => (float)config('gpt.openai.top_p'),
+            'frequency_penalty' => (float)config('gpt.openai.frequency_penalty'),
+            'presence_penalty' => (float)config('gpt.openai.presence_penalty'),
+            'stop' => [config('gpt.openai.stop')],
+        ])->json();
+
+        if (!array_key_exists('choices', $response)) {
+            return response()->json([
+                'success' => false,
+                'data' => [
+                    'error' => $response['error'],
+                ],
+            ]);
+        }
+
+        $createdParaphraseId = Paraphrase::create([
+            'subject' => config('gpt.subjects.literature'),
+            'topic' => $request->topic . ' [' . $request->size . ']',
+            'paraphrase' => $response['choices'][0]['message']['content'],
+            'user_id' => auth('sanctum')->user()->id,
+        ])->id;
+
+        $paraphrase = Paraphrase::with('user')->where('id', $createdParaphraseId)->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $paraphrase,
+        ]);
+    }
+
     public function paraphraseTest($paraphraseId)
     {
         $paraphrase = Paraphrase::where('id', $paraphraseId)->with('questions.options')->first();
@@ -111,7 +180,7 @@ class ParaphraseController extends Controller
                 ],
                 [
                     'role' => 'user',
-                    'content' => 'Сфорулюй 5 тестових запитань до цього тексту ' . $paraphrase->paraphrase . ' , який є стислим переказом теми ' . $paraphrase->topic . ' з предмету ' . $paraphrase->subject . '. На кожне запитання 3 варіанти відповіді, де тільки одна правильна. Запитання мають бути виключно українською мовою. Всі запитання надай у полі "questions" як масив запитань. В об\'єкті питання має бути поле "question" значенням якого є текст запитання. Масив "options" з переліком варіантів відповіді. Та "correct" значення якого індекс правильного варіанту відповіді з масиву "options"',
+                    'content' => 'Сфорулюй 5 тестових запитань до цього тексту ' . $paraphrase->paraphrase . ' , який є стислим переказом теми ' . $paraphrase->topic . ' з предмету ' . $paraphrase->subject . '. На кожне запитання 4 варіанти відповіді, де тільки одна правильна. Запитання мають бути виключно українською мовою. Всі запитання надай у полі "questions" як масив запитань. В об\'єкті питання має бути поле "question" значенням якого є текст запитання. Масив "options" з переліком варіантів відповіді. Та "correct" значення якого індекс правильного варіанту відповіді з масиву "options"',
                 ]
             ],
 
@@ -140,7 +209,7 @@ class ParaphraseController extends Controller
                 'paraphrase_id' => $paraphraseId,
             ])->id;
 
-            for ($i = 0; $i < 3; $i++) {
+            for ($i = 0; $i < 4; $i++) {
                 Option::create([
                     'option' => $question->options[$i],
                     'correct' => $i == $question->correct,
