@@ -25,6 +25,7 @@ Route::prefix('/auth')->name('auth.')->group(function () {
 Route::prefix('/user')->controller(UserController::class)->middleware('auth:sanctum')->name('user.')->group(function () {
     Route::get('/', 'getUserByToken')->name('getByToken');
     Route::get('/history-paraphrase/{paraphraseId}', 'getUserHistoryParaphraseById')->name('history');
+    Route::get('/history-paraphrase', 'getUserHistoryParaphrases')->name('wholeHistory');
     Route::post('/premium-purchase', 'premiumPurchase')->name('premiumPurchase');
 });
 

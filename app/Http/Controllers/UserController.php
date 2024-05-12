@@ -73,4 +73,16 @@ class UserController extends Controller
             ],
         ]);
     }
+
+    public function getUserHistoryParaphrases()
+    {
+        $paraphrases = Paraphrase::latest()->where('user_id', auth('sanctum')->user()->id)->with('user', 'questions.options')->get()->toArray();
+        $history = array_slice($paraphrases, 0, 15);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'history' => $history,
+            ]
+        ]);
+    }
 }
