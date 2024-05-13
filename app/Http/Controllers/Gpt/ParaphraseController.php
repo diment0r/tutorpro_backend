@@ -175,7 +175,13 @@ class ParaphraseController extends Controller
             ]);
         }
 
-        $questions = $this->storeParaphraseTest(json_decode($response['choices'][0]['message']['content']), $paraphraseId);
+        // ! КОСТЫЛЬ (С GPT иногда приходит не 5 вопросов , а меньше, возможно из-за ограничений токенов, тогда это 500 на клиенте, такое бывало пару раз, но надо контрить)
+        $test = json_decode($response['choices'][0]['message']['content']);
+        if (count($test->questions) != 5) {
+            return redirect()->route('paraphrase.test', ['paraphraseId' => $paraphraseId]);
+        }
+
+        $questions = $this->storeParaphraseTest($test, $paraphraseId);
         return response()->json([
             'success' => true,
             'data' => $questions,
