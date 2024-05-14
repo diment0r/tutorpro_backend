@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('paraphrases', function (Blueprint $table) {
+        Schema::create('paraphrase_user', function (Blueprint $table) {
             $table->id();
-            $table->string('subject');
-            $table->string('topic')->index();
-            $table->text('paraphrase');
-            // $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->constrained()->onDelete('CASCADE');
+            $table->foreignId('paraphrase_id')->constrained()->onDelete('CASCADE');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('paraphrases');
+        Schema::dropIfExists('paraphrase_user');
     }
 };

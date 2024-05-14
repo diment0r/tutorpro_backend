@@ -33,6 +33,6 @@ class User extends Authenticatable
 
     public function paraphrases()
     {
-        return $this->hasMany(Paraphrase::class);
+        return $this->belongsToMany(Paraphrase::class);
     }
 }

@@ -56,7 +56,7 @@ class UserController extends Controller
 
     public function getUserHistoryParaphraseById($paraphraseId)
     {
-        $paraphrase = Paraphrase::where('id', $paraphraseId)->with('user', 'questions.options')->first();
+        $paraphrase = Paraphrase::where('id', $paraphraseId)->with('questions.options')->first();
         if (!$paraphrase) {
             return response()->json([
                 'success' => false,
@@ -76,7 +76,9 @@ class UserController extends Controller
 
     public function getUserHistoryParaphrases()
     {
-        $paraphrases = Paraphrase::latest()->where('user_id', auth('sanctum')->user()->id)->with('user', 'questions.options')->get()->toArray();
+        $userId = auth('sanctum')->user()->id;
+
+        $paraphrases = User::find($userId)->paraphrases()->with('questions.options')->latest()->get()->toArray();
         $history = array_slice($paraphrases, 0, 15);
         return response()->json([
             'success' => true,

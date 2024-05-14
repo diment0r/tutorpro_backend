@@ -23,13 +23,19 @@ class ParaphraseSeeder extends Seeder
             config('gpt.subjects.history'),
         ];
 
-        foreach ($users as $user) {
-            $paraphraseCount = rand(1, 3);
-
-            Paraphrase::factory()->count($paraphraseCount)->create([
+        for ($i = 0; $i < 10; $i++) {
+            Paraphrase::factory()->create([
                 'subject' => $subjects[rand(0, 3)],
-                'user_id' => $user->id,
             ]);
         }
+
+        // foreach ($users as $user) {
+        //     $paraphraseCount = rand(1, 3);
+
+        //     Paraphrase::factory()->count($paraphraseCount)->create([
+        //         'subject' => $subjects[rand(0, 3)],
+        //         'user_id' => $user->id,
+        //     ]);
+        // }
     }
 }
